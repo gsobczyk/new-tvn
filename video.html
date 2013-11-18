@@ -25,7 +25,6 @@
 		// console.log("itemUrl: "+infoUrl);
 		$.getJSON(infoUrl, function(data){
 			var videos = data.item.videos.main.video_content;
-			// console.log(videos.length);
 			var poster = 'http://redir.atmcdn.pl/scale/o2/tvn/web-content/m/'+data.item.thumbnail[0].url+'?quality=70&srcmode=0&type='+data.item.type_episode+'&srcx='+data.item.thumbnail[0].srcx+'&srcy='+
 					data.item.thumbnail[0].srcy+'&srcw='+data.item.thumbnail[0].srcw+'&srch='+data.item.thumbnail[0].srch+'&dstw=640&dsth=360';
  			if (videos.length>0){
@@ -50,50 +49,20 @@
 					  // Player (this) is initialized and ready.
 					});
 				});
-
-	 		// 	var object = '<object data="'+url+'"  type="video/mp4" id="media" width="600" height="380" autoStart="true" downloadable="false"> </object>';
-	 		// 	var html5video='<video id="tvnvideo" class="video-js" autoplay controls poster="'+poster+'" data-setup=\'{}\'>'+
-	 		// 		'<source src="'+url+'" type="video/mp4" />'+
-	 		// 		'</video>';
-				// $("#movie").empty().append(object);
-//		 		VideoJS.setup('tvnvideo');
-// 	 			$.get(url, function(data, textStatus){
-// 	 				if (data.redirect){
-// 	 				}
-// 	 			});
  			} else {
  				$("#movie").empty().append('<img src="'+poster+'" />');
  			}
 		});
 	});
 </script>
-<script type="text/javascript">
-  // // Once the video is ready
-  // _V_("tvnvideo").ready(function(){
-
-  //   var myPlayer = this;    // Store the video object
-  //   var aspectRatio = 9/16; // Make up an aspect ratio
-
-  //   function resizeVideoJS(){
-  //     // Get the parent element's actual width
-  //     var width = document.getElementById(myPlayer.id).parentElement.offsetWidth;
-  //     // Set width to fill parent element, Set height
-  //     myPlayer.width(width).height( width * aspectRatio );
-  //   }
-
-  //   resizeVideoJS(); // Initialize the function
-  //   window.onresize = resizeVideoJS; // Call the function on resize
-  // });
-</script>
 <script id="playerTemplate" type="text/x-jsrender">
-	<video id="player" class="video-js vjs-default-skin" controls preload="auto" width="{{>w}}" height="{{>h}}" poster="{{>poster}}" data-setup='{"example_option":true}'>
+	<video id="player" class="video-js vjs-default-skin" controls preload="auto" width="{{>w}}" height="{{>h}}" poster="{{>poster}}" data-setup='{"autoplay": "true"}'>
 	 	<source src="{{>movie}}" type='video/mp4' />
 	</video>
 </script>
 </head>
 <body>
 	<div id="movie">
-			
 	</div>
 </body>
 </html>
