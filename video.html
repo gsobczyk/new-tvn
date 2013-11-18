@@ -11,6 +11,10 @@
 	<script src="js/jquery.ba-bbq.js" type="text/javascript"></script>
 	<script src="js/utils.js" type="text/javascript"></script>
 
+	<link rel="stylesheet" type="text/css" href="css/kube.min.css" />
+	<link rel="stylesheet" type="text/css" href="css/master.css" />
+	<script type="text/javascript" src="js/kube.tabs.js"></script>
+
 	<link href="css/video-js.css" rel="stylesheet">
 	<script src="js/video.js"></script>
 	<script>
@@ -27,31 +31,60 @@
 			var videos = data.item.videos.main.video_content;
 			var poster = 'http://redir.atmcdn.pl/scale/o2/tvn/web-content/m/'+data.item.thumbnail[0].url+'?quality=70&srcmode=0&type='+data.item.type_episode+'&srcx='+data.item.thumbnail[0].srcx+'&srcy='+
 					data.item.thumbnail[0].srcy+'&srcw='+data.item.thumbnail[0].srcw+'&srch='+data.item.thumbnail[0].srch+'&dstw=640&dsth=360';
- 			if (videos.length>0){
-				var videoIndex=0;
-				if (videos.length>1){
-					videoIndex=1;
-				}
-				var urlFileName = videos[videoIndex].url;
-				
+			data.movies = [];
+			for (var i = 0; i < videos.length; i++) {
+				var v = videos[i];
+				var urlFileName = v.url;
 				var proxy = 'http://www.corsproxy.com/' + urlFileName.replace('http://', '');
-				$.get(proxy, function(response){
-					var movie_data = {
-						movie: response,
-						poster: poster,
-						w: 720,
-						h: 405
-					}
-					$("#movie").html(
-						$("#playerTemplate").render(movie_data)
-					);
-					videojs("player", {}, function(){
-					  // Player (this) is initialized and ready.
-					});
+				var video_url;
+				$.ajax({
+					url: proxy, 
+					success: function(response){
+						video_url = response;
+					},
+					async: false
 				});
- 			} else {
- 				$("#movie").empty().append('<img src="'+poster+'" />');
- 			}
+				data.movies.push({
+					"movie" : video_url,
+					"label" : v.profile_name,
+					"poster" : poster,
+					"w": 720,
+					"h": 405,
+					"index" : i
+				});
+
+			};
+			$("#content").html(
+				$("#tabsTemplate").render(data)
+			);
+			$('nav[data-toggle="tabs"]').tabs();
+ 			// if (videos.length>0){
+				// var videoIndex=0;
+				// if (videos.length>1){
+				// 	videoIndex=1;
+				// }
+				// var urlFileName = videos[videoIndex].url;
+				
+				// var proxy = 'http://www.corsproxy.com/' + urlFileName.replace('http://', '');
+				// $.ajax({
+				// 	url: proxy, 
+				// 	success: function(response){
+				// 		var movie_data = {
+				// 			movie: response,
+				// 			poster: poster,
+				// 			w: 720,
+				// 			h: 405
+				// 		}
+				// 		$("#movie").html(
+				// 			$("#playerTemplate").render(movie_data)
+				// 		);
+				// 		videojs("player", {}, function(){});
+				// 	},
+				// 	async: false
+				// });
+ 			// } else {
+ 			// 	$("#movie").empty().append('<img src="'+poster+'" />');
+ 			// }
 		});
 	});
 </script>
@@ -60,9 +93,31 @@
 	 	<source src="{{>movie}}" type='video/mp4' />
 	</video>
 </script>
+<script id="tabsTemplate" type="text/x-jsrender">
+	<h1>{{:item.serie_title}}</h1>
+	<h1 class="subheader">{{:item.title}}</h1>
+	{{if item.season!=0 && item.episode!=0}}
+		<h2>Sezon {{:item.season}}, epizod {{:item.episode}}</h2>
+	{{/if}}
+	<nav class="nav-tabs" data-toggle="tabs" data-height="equal">
+	    <ul>
+			{{for movies}}
+				<li><a href="#tab{{>index}}" {{if index==0}}class="active"{{/if}}>{{>label}}</a></li>
+			{{/for}}
+	    </ul>
+	</nav>
+	{{for movies}}
+		<div id="tab{{>index}}">
+			<video id="player" class="video-js vjs-default-skin" controls preload="auto" width="{{>w}}" height="{{>h}}" poster="{{>poster}}" data-setup='{"autoplay": "false"}'>
+			 	<source src="{{>movie}}" type='video/mp4' />
+			</video>
+		</div>
+	{{/for}}
+	<p>{{:item.lead}}</p>
+</script>
 </head>
 <body>
-	<div id="movie">
+	<div class="wrapper" id="content">
 	</div>
 </body>
 </html>
