@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="pl">
+<head>
+	<meta charset="UTF-8">
+	<title>VOD TVP - HTML5</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon" type="image/x-icon" href="favicon.ico" />
+
+	<script src="js/jquery-1.10.2.min.js" type="text/javascript"></script>
+	<script src="js/jsrender.js" type="text/javascript"></script>
+	<script src="js/jquery.ba-bbq.js" type="text/javascript"></script>
+	<script src="js/utils.js" type="text/javascript"></script>
+
+	<link rel="stylesheet" type="text/css" href="css/kube.min.css" />
+	<link rel="stylesheet" type="text/css" href="css/master.css" />
+	<script type="text/javascript">
+		$(document).ready(function(){
+			var params = $.deparam.querystring();
+			var parent_id = params.parent_id || 1785454;
+			var data = get_tvp_items(parent_id);
+			data.name = params.name;
+			var video;
+			for (var i = 0; i < data.items.length; i++) {
+				var item = data.items[i];
+				if (item.title.indexOf("wideo")!=-1){
+					video = item;
+					break;
+				}
+			};
+			if (video){
+				items = get_tvp_items(video._id);
+				items.name = params.name;
+				$("#content").html(
+					$("#itemsTemplate").render(items)
+				);
+				// alert("ma wideo");
+			} else {
+				$("#content").html(
+					$("#dirTemplate").render(data)
+				);
+			}
+		});
+	</script>
+
+	<script id="dirTemplate" type="text/x-jsrender">
+		<h1>{{if name}}{{>name}}{{else}}Kategorie{{/else}}</h1>
+		<ul>
+			{{for items}}
+				<li><a href="?name={{>title}}&parent_id={{>asset_id}}">{{>title}}</a></li>
+			{{/for}}
+		</ul>
+	</script>
+	<script id="itemsTemplate" type="text/x-jsrender">
+		<h1>{{>name}}</h1>
+		<ul class="blocks-5">
+			{{for items}}
+				<li class="item {{if (#index%5)==0}}block-first{{/if}}" >
+						<a href="video-tvp.html?id={{>_id}}&title_root={{>title_root}}" title="{{>name}} {{>title}}" rel="fancybox" >
+							{{if image}}
+								<img 
+									class="cover" 
+
+			                        iconFile = item['image'][0]['file_name']
+			                        iconWidth = item['image'][0]['width']
+			                        iconUrl = urlImage %(iconFile[0],iconFile[1],iconFile[2],iconFile[:-4],iconWidth)
+
+									src="http://s.v3.tvp.pl/images/{{>image[0].file_name[0]}}/{{>image[0].file_name[1]}}/{{>image[0].file_name[2]}}/uid_{{>~extract_filename(image[0].file_name)}}_width_200_gs_0.jpg" 
+									alt="{{>name}} {{>title}}" 
+									title="{{>name}} {{>title}}"/>
+							{{/if}}
+							<div class="box-content">
+								<em>{{if title_root}}{{>title_root}}{{else}}{{>title}}{{/if}}</em>
+							</div>
+						</a>
+				</li>
+			{{/for}}
+		</ul>
+	</script>
+</head>
+<body>
+	<div class="wrapper" id="content">
+	</div>
+</body>
+</html>
