@@ -23,16 +23,20 @@
 
 <script type="text/javascript">
 	$(document).ready(function(){
-		var params = $.deparam.querystring();
+		var params = $.deparam.querystring(true);
+		var only_first = params.only_first;
+		if (only_first==undefined) only_first = true;
 		var resolution = '&deviceScreenHeight=1080&deviceScreenWidth=1920';
 		var infoUrl = base_url + '&m=getItem&type=' + params['type'] + '&id=' + params['id'] + resolution + '&callback=?';
 		// console.log("itemUrl: "+infoUrl);
 		$.getJSON(infoUrl, function(data){
 			var videos = data.item.videos.main.video_content;
 			var poster = 'http://redir.atmcdn.pl/scale/o2/tvn/web-content/m/'+data.item.thumbnail[0].url+'?quality=70&srcmode=0&type='+data.item.type_episode+'&srcx='+data.item.thumbnail[0].srcx+'&srcy='+
-					data.item.thumbnail[0].srcy+'&srcw='+data.item.thumbnail[0].srcw+'&srch='+data.item.thumbnail[0].srch+'&dstw=640&dsth=360';
+					data.item.thumbnail[0].srcy+'&srcw='+data.item.thumbnail[0].srcw+'&srch='+data.item.thumbnail[0].srch+'&dstw=720&dsth=405';
 			data.movies = [];
-			for (var i = 0; i < videos.length; i++) {
+			var max = videos.length;
+			if (only_first) max = 1;
+			for (var i = 0; i < max; i++) {
 				var v = videos[i];
 				var urlFileName = v.url;
 				var proxy = 'http://www.corsproxy.com/' + urlFileName.replace('http://', '');
@@ -44,6 +48,8 @@
 					},
 					async: false
 				});
+				data.only_first = only_first;
+				data.query_string = document.location.search;
 				data.movies.push({
 					"movie" : video_url,
 					"label" : v.profile_name,
@@ -57,34 +63,9 @@
 			$("#content").html(
 				$("#tabsTemplate").render(data)
 			);
-			$('nav[data-toggle="tabs"]').tabs();
- 			// if (videos.length>0){
-				// var videoIndex=0;
-				// if (videos.length>1){
-				// 	videoIndex=1;
-				// }
-				// var urlFileName = videos[videoIndex].url;
-				
-				// var proxy = 'http://www.corsproxy.com/' + urlFileName.replace('http://', '');
-				// $.ajax({
-				// 	url: proxy, 
-				// 	success: function(response){
-				// 		var movie_data = {
-				// 			movie: response,
-				// 			poster: poster,
-				// 			w: 720,
-				// 			h: 405
-				// 		}
-				// 		$("#movie").html(
-				// 			$("#playerTemplate").render(movie_data)
-				// 		);
-				// 		videojs("player", {}, function(){});
-				// 	},
-				// 	async: false
-				// });
- 			// } else {
- 			// 	$("#movie").empty().append('<img src="'+poster+'" />');
- 			// }
+			try {
+				$('nav[data-toggle="tabs"]').tabs();
+			} catch (err) {}
 		});
 	});
 </script>
@@ -104,6 +85,9 @@
 			{{for movies}}
 				<li><a href="#tab{{>index}}" {{if index==0}}class="active"{{/if}}>{{>label}}</a></li>
 			{{/for}}
+			{{if only_first}}
+				<li><a href="{{>query_string}}&only_first=false">Więcej</a></li>
+			{{/if}}
 	    </ul>
 	</nav>
 	{{for movies}}
@@ -111,6 +95,7 @@
 			<video id="player" class="video-js vjs-default-skin" controls preload="auto" width="{{>w}}" height="{{>h}}" poster="{{>poster}}" data-setup='{"autoplay": "false"}'>
 			 	<source src="{{>movie}}" type='video/mp4' />
 			</video>
+			<a href="{{>movie}}">Pobierz</a>
 		</div>
 	{{/for}}
 	<p>{{:item.lead}}</p>
