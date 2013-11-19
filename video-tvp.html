@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>VOD TVP - HTML5</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon" type="image/x-icon" href="favicon.ico" />
+
+	<script src="js/jquery-1.10.2.min.js" type="text/javascript"></script>
+	<script src="js/jsrender.js" type="text/javascript"></script>
+	<script src="js/jquery.ba-bbq.js" type="text/javascript"></script>
+	<script src="js/utils.js" type="text/javascript"></script>
+
+	<link rel="stylesheet" type="text/css" href="css/kube.min.css" />
+	<link rel="stylesheet" type="text/css" href="css/master.css" />
+	<script type="text/javascript" src="js/kube.tabs.js"></script>
+
+	<link href="css/video-js.css" rel="stylesheet">
+	<script src="js/video.js"></script>
+	<script>
+	  videojs.options.flash.swf = "video-js.swf"
+	</script>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		var params = $.deparam.querystring(true);
+		var image_data = get_tvp_items(params.id);
+		var url = 'http://www.corsproxy.com/www.tvp.pl/pub/stat/videofileinfo?video_id=' + params.id
+		$.getJSON(url, function(data){
+			if (image_data.items[0]){
+				var image = image_data.items[0].image_4x3[0];
+				var poster = 'http://s.v3.tvp.pl/images/'+image.file_name[0]+'/'+image.file_name[1]+'/'+image.file_name[2]+'/uid_'+get_filename(image.file_name)+'_width_720_gs_0.jpg';
+				data.poster = poster;
+			}
+			data.params = params;
+			data.w = 720;
+			data.h = 486;
+			$("#content").html(
+				$("#itemTemplate").render(data)
+			);
+			videojs("player", {}, function(){});
+		});
+	});
+</script>
+<script id="itemTemplate" type="text/x-jsrender">
+	<h1>{{:params.title_root}}</h1>
+	<video id="player" class="video-js vjs-default-skin" controls preload="auto" width="{{>w}}" height="{{>h}}" poster="{{>poster}}" data-setup='{"autoplay": "true"}'>
+	 	<source src="{{>video_url}}" type='video/mp4' />
+	</video>
+	<a href="{{>video_url}}">Pobierz</a>
+</script>
+</head>
+<body>
+	<div class="wrapper" id="content">
+	</div>
+</body>
+</html>

@@ -27,7 +27,7 @@
 		var only_first = params.only_first;
 		if (only_first==undefined) only_first = true;
 		var resolution = '&deviceScreenHeight=1080&deviceScreenWidth=1920';
-		var infoUrl = base_url + '&m=getItem&type=' + params['type'] + '&id=' + params['id'] + resolution + '&callback=?';
+		var infoUrl = base_url + '&m=getItem&type=' + params.type + '&id=' + params.id + resolution + '&callback=?';
 		// console.log("itemUrl: "+infoUrl);
 		$.getJSON(infoUrl, function(data){
 			var videos = data.item.videos.main.video_content;
@@ -69,11 +69,6 @@
 		});
 	});
 </script>
-<script id="playerTemplate" type="text/x-jsrender">
-	<video id="player" class="video-js vjs-default-skin" controls preload="auto" width="{{>w}}" height="{{>h}}" poster="{{>poster}}" data-setup='{"autoplay": "true"}'>
-	 	<source src="{{>movie}}" type='video/mp4' />
-	</video>
-</script>
 <script id="tabsTemplate" type="text/x-jsrender">
 	<h1>{{:item.serie_title}}</h1>
 	<h1 class="subheader">{{:item.title}}</h1>
@@ -92,7 +87,7 @@
 	</nav>
 	{{for movies}}
 		<div id="tab{{>index}}">
-			<video id="player" class="video-js vjs-default-skin" controls preload="auto" width="{{>w}}" height="{{>h}}" poster="{{>poster}}" data-setup='{"autoplay": "false"}'>
+			<video id="player{{>index}}" class="video-js vjs-default-skin" controls preload="auto" width="{{>w}}" height="{{>h}}" poster="{{>poster}}" data-setup='{"autoplay": "false"}'>
 			 	<source src="{{>movie}}" type='video/mp4' />
 			</video>
 			<a href="{{>movie}}">Pobierz</a>

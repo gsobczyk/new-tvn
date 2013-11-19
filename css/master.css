@@ -1,7 +1,7 @@
 /* =Typography
 -----------------------------------------------------------------------------*/
 body {
-
+    font-size: 125%;
 }
 
 /* =Links
@@ -14,7 +14,7 @@ body {
 	padding: 0 10px;
 	width: 94%;
 	max-width: 1300px;
-	margin: auto;
+	margin: 2em auto;
 }
 
 /* =Header

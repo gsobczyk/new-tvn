@@ -2,6 +2,36 @@ base_url = 'http://tvnplayer.pl/api/?platform=ConnectedTV&terminal=Samsung&forma
 // base_url = 'http://tvnplayer.pl/api/?platform=Mobile&terminal=Android&format=json&v=2.0&authKey=b4bc971840de63d105b3166403aa1bea';
 scale_url = 'http://redir.atmcdn.pl/scale/o2/tvn/web-content/m/';
 
+tvp_base_url = 'http://www.api.v3.tvp.pl/shared/listing.php?dump=json&direct=true&count=150';
+tvp_image = 'http://s.v3.tvp.pl/images/%s/%s/%s/uid_%s_width_%d_gs_0.jpg';
+
+
+function get_tvp_items(parent_id){
+  var url = tvp_base_url + '&parent_id=' + parent_id;
+  var json;
+  $.ajax({
+    url: url, 
+    success: function(response){
+      json = response;
+    },
+    async: false
+  });
+  return JSON.parse(json);
+}
+
+function get_filename(file_name){
+  if (file_name) {
+    return file_name.replace(/\.[^/.]+$/, "");
+  }
+}
+
+$.views.helpers({
+  extract_filename: function (file_name) {
+    return get_filename(file_name);
+  }
+});
+
+
 function createCORSRequest(method, url){
     var xhr = new XMLHttpRequest();
     if ("withCredentials" in xhr){
