@@ -39,7 +39,7 @@
 			for (var i = 0; i < max; i++) {
 				var v = videos[i];
 				var urlFileName = v.url;
-				var proxy = 'http://www.corsproxy.com/' + urlFileName.replace('http://', '');
+				var proxy = 'http://www.corsproxy.com/' + urlFileName.replace('http://tvnplayer.pl', 'player.pl');
 				var video_url;
 				$.ajax({
 					url: proxy, 
